@@ -1,6 +1,6 @@
 import math
 
-class PurePersuiteController:
+class PurePursuitController:
     """
         this a class to define a controller object of a pure pursuite controller
         
