@@ -17,15 +17,17 @@ class PurePersuiteController:
     coordinates = []
     theta = 0
     velocity = 0
+    maxSteeringAngle = 0
     Kdd = 1 #ld=Kdd*v, ld=lookahead distance
 
-    def __init__(self, WayPoints, L, x0, y0, Theta0, Kdd, V): # initializes the controller and sets the initial values
+    def __init__(self, WayPoints, L, x0, y0, Theta0, Kdd, V, msa): # initializes the controller and sets the initial values
         self.lookAhead = WayPoints
         self.L = L
         self.coordinates = [x0, y0]
         self.theta = Theta0
         self.Kdd = Kdd
         self.velocity = V
+        self.maxSteeringAngle = msa
             
     def updateState (self,x,y,v,theta): # update the current state of the car in the controller for calculations
         self.coordinates = [x, y]
@@ -39,5 +41,5 @@ class PurePersuiteController:
         ld = self.velocity * self.Kdd 
         alpha = math.atan2(self.lookAhead[1] - self.coordinates[1], self.lookAhead[0] - self.coordinates[0]) - self.theta #error angle
         delta = math.atan2(2*self.L*math.sin(alpha),ld)
-        return delta
+        return max(delta, -self.maxSteeringAngle) if (delta < 0) else min(delta, self.maxSteeringAngle)
         
