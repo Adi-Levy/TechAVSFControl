@@ -16,7 +16,6 @@ class PurePersuiteController:
     lookAhead = [] #mx2
     coordinates = []
     theta = 0
-    delta = 0
     velocity = 0
     Kdd = 1 #ld=Kdd*v, ld=lookahead distance
 
@@ -39,6 +38,6 @@ class PurePersuiteController:
     def SuggestSteering(self): # calc the needed steering angle to course correct to the next waypoint
         ld = self.velocity * self.Kdd 
         alpha = math.atan2(self.lookAhead[1] - self.coordinates[1], self.lookAhead[0] - self.coordinates[0]) - self.theta #error angle
-        self.delta = math.atan2(2*self.L*math.sin(alpha),ld)
-        return self.delta
+        delta = math.atan2(2*self.L*math.sin(alpha),ld)
+        return delta
         
