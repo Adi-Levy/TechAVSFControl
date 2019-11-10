@@ -17,7 +17,7 @@ class PurePersuiteController:
     coordinates = []
     theta = 0
     velocity = 0
-    maxSteeringAngle = 0
+    maxSteeringAngle = 0 # based on vehicle data and physical limits
     Kdd = 1 #ld=Kdd*v, ld=lookahead distance
 
     def __init__(self, WayPoints, L, x0, y0, Theta0, Kdd, V, msa): # initializes the controller and sets the initial values
