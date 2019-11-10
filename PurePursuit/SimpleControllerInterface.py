@@ -9,37 +9,36 @@ class PurePersuiteController:
             the next waypoint's coordinates (in the lookahead list)
         and then calculates the steering angle requiered to course correct according to the car's velocity
         in order to update the data in the controller it's update methods need to be called.
-
     """
     
-    L = 0 #Car Length
-    lookAhead = [] #mx2
+    car_length = 0 
+    look_ahead_point = [] # the point [x,y] on the path a lookahead distance away from the car
     coordinates = []
-    theta = 0
+    orientation = 0
     velocity = 0
-    maxSteeringAngle = 0 # based on vehicle data and physical limits
-    Kdd = 1 #ld=Kdd*v, ld=lookahead distance
+    max_steering_angle = 0 # based on vehicle data and physical limits
+    kdd = 1 # ld=kdd*v, ld=lookahead distance
 
-    def __init__(self, WayPoints, L, x0, y0, Theta0, Kdd, V, msa): # initializes the controller and sets the initial values
-        self.lookAhead = WayPoints
-        self.L = L
+    def __init__(self, look_ahead_point, car_length, x0, y0, theta0, kdd, v, msa): # initializes the controller and sets the initial values
+        self.look_ahead_point = look_ahead_point
+        self.car_length = car_length
         self.coordinates = [x0, y0]
-        self.theta = Theta0
-        self.Kdd = Kdd
-        self.velocity = V
-        self.maxSteeringAngle = msa
+        self.orientation = theta0
+        self.kdd = kdd
+        self.velocity = v
+        self.max_steering_angle = msa
             
-    def updateState (self,x,y,v,theta): # update the current state of the car in the controller for calculations
+    def update_state (self, x, y, v, orientation): # update the current state of the car in the controller for calculations
         self.coordinates = [x, y]
         self.velocity = v
-        self.theta = theta
+        self.orientation = orientation
 
-    def updateWaypoints (self, waypoints): # update the waypoints of the path for the controller for calculations
-        self.lookAhead = waypoints
+    def update_waypoints (self, look_ahead_point): # update the waypoints of the path for the controller for calculations
+        self.look_ahead_point = look_ahead_point
 
-    def SuggestSteering(self): # calc the needed steering angle to course correct to the next waypoint
-        ld = self.velocity * self.Kdd 
-        alpha = math.atan2(self.lookAhead[1] - self.coordinates[1], self.lookAhead[0] - self.coordinates[0]) - self.theta #error angle
-        delta = math.atan2(2*self.L*math.sin(alpha),ld)
-        return max(delta, -self.maxSteeringAngle) if (delta < 0) else min(delta, self.maxSteeringAngle)
+    def suggest_steering(self): # calc the needed steering angle to course correct to the next waypoint
+        ld = self.velocity * self.kdd 
+        alpha = math.atan2(self.look_ahead_point[1] - self.coordinates[1], self.look_ahead_point[0] - self.coordinates[0]) - self.orientation # error angle
+        delta = math.atan2(2*self.car_length*math.sin(alpha), ld)
+        return max(delta, -self.max_steering_angle) if (delta < 0) else min(delta, self.max_steering_angle)
         
