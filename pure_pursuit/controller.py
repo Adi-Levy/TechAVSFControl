@@ -6,7 +6,7 @@ class PurePursuitController:
         
         the controller gets
             the current state of the car(x,y coordinates, velocity and current angle),
-            the next waypoint's coordinates (in the lookahead list)
+            the currnet path that the car should follow
         and then calculates the steering angle requiered to course correct according to the car's velocity
         in order to update the data in the controller it's update methods need to be called.
     """
