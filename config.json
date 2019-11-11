@@ -1,0 +1,6 @@
+{
+	"module_name": "pure_pursuit",
+	"car_length": 8,
+	"kdd": 1,
+	"max_steering_angle": 24
+}
