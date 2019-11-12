@@ -39,6 +39,8 @@ class PurePursuitController:
         delta = math.atan2(2*self._car_length*math.sin(alpha), ld)
         return max(delta, -self._max_steering_angle) if (delta < 0) else min(delta, self.max_steering_angle)
 
+    # private methods
+
     def _calculate_look_ahead_point(self):
         ld = self.velocity * self._kdd
         # complete logic here
