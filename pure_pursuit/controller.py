@@ -37,7 +37,7 @@ class PurePursuitController:
 
         alpha = math.atan2(look_ahead_point[1] - self.coordinates[1], look_ahead_point[0] - self.coordinates[0]) - self.orientation # error angle
         delta = math.atan2(2*self._car_length*math.sin(alpha), ld)
-        return max(delta, -self._max_steering_angle) if (delta < 0) else min(delta, self.max_steering_angle)
+        return max(delta, -self._max_steering_angle) if (delta < 0) else min(delta, self._max_steering_angle)
 
     # private methods
 
