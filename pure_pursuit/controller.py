@@ -49,18 +49,18 @@ class PurePursuitController:
         swapped_axis_path = np.swapaxes(self.path[max(near_point_index-4, 0):min(near_point_index+4, len(self.path)-1)], 0 , 1)
         p = np.poly1d(np.polyfit(swapped_axis_path[0], swapped_axis_path[1], self._poly_deg))
 
-        i = 0
-        while (self._point_distance(self.path[near_point_index+i]) < ld):
-            i+=1
+        point_index = 0
+        while (self._point_distance(self.path[near_point_index+point_index]) < ld):
+            point_index+=1
         
-        x_sector = np.linspace(self.path[(i-1)[0]], self.path[i[0]], 5)
+        x_sector = np.linspace(self.path[(near_point_index+point_index-1)[0]], self.path[near_point_index+point_index[0]], 5)
         y_sector = np.polyval(p, x_sector)
         
-        i = 0
-        while (self._point_distance([x_sector[i], y_sector[i]]) < ld):
-            i+=1
+        point_index = 0
+        while (self._point_distance([x_sector[point_index], y_sector[point_index]]) < ld):
+            point_index+=1
 
-        return [x_sector[i], y_sector[i]]
+        return [x_sector[point_index], y_sector[point_index]]
 
     def _find_near_point_index(self):
         near_point = [self.path[0]]
