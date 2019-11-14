@@ -1,4 +1,5 @@
 import math
+import numpy as np
 
 class PurePursuitController:
     """
@@ -18,6 +19,7 @@ class PurePursuitController:
     _car_length = 0 
     _max_steering_angle = 0  # based on vehicle data and physical limits
     _kdd = 1                 # ld=kdd*v, ld=lookahead distance
+    _poly_deg = 3
 
     def __init__(self, car_length, kdd, msa): # initializes the controller and sets the initial values
         self._car_length = car_length
@@ -36,10 +38,41 @@ class PurePursuitController:
         look_ahead_point = self._calculate_look_ahead_point()
 
         alpha = math.atan2(look_ahead_point[1] - self.coordinates[1], look_ahead_point[0] - self.coordinates[0]) - self.orientation # error angle
-        delta = math.atan2(2*self._car_length*math.sin(alpha), ld)
-        return max(delta, -self._max_steering_angle) if (delta < 0) else min(delta, self.max_steering_angle)
+        delta = math.atan2(2*self._car_length*math.sin(alpha), self._point_distance(look_ahead_point))
+        return max(delta, -self._max_steering_angle) if (delta < 0) else min(delta, self._max_steering_angle)
 
     def _calculate_look_ahead_point(self):
         ld = self.velocity * self._kdd
-        # complete logic here
+        
+        near_point_index = self._find_near_point_index()
+
+        swapped_axis_path = np.swapaxes(self.path[max(near_point_index-4, 0):min(near_point_index+4, len(self.path)-1)], 0 , 1)
+        p = np.poly1d(np.polyfit(swapped_axis_path[0], swapped_axis_path[1], self._poly_deg))
+
+        i = 0
+        while (self._point_distance(self.path[near_point_index+i]) < ld):
+            i+=1
+        
+        x_sector = np.linspace(self.path[(i-1)[0]], self.path[i[0]], 5)
+        y_sector = np.polyval(p, x_sector)
+        
+        i = 0
+        while (self._point_distance([x_sector[i], y_sector[i]]) < ld):
+            i+=1
+
+        return [x_sector[i], y_sector[i]]
+
+    def _find_near_point_index(self):
+        near_point = [self.path[0]]
+        for way_point in self.path:
+            near_point_distance = self._point_distance(near_point)
+            way_point_distance = self._point_distance(way_point)
+            if (near_point_distance > way_point_distance):
+                near_point = way_point
+        
+        return self.path.index(near_point)
+
+    def _point_distance(self, point):
+        return math.sqrt((self.coordinates[0] - point[0])**2 + (self.coordinates[1] - point[1])**2)
+
         
