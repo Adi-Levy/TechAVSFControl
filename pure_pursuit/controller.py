@@ -19,12 +19,13 @@ class PurePursuitController:
     _car_length = 0 
     _max_steering_angle = 0  # based on vehicle data and physical limits
     _kdd = 1                 # ld=kdd*v, ld=lookahead distance
-    _poly_deg = 3
+    _poly_fit_deg = 3
 
-    def __init__(self, car_length, kdd, msa): # initializes the controller and sets the initial values
+    def __init__(self, car_length, kdd, max_steering_angle, poly_fit_deg): # initializes the controller and sets the initial values
         self._car_length = car_length
         self._kdd = kdd
         self._max_steering_angle = msa
+        self._poly_fit_deg  = poly_fit_deg
             
     def update_state(self, x, y, v, orientation): # update the current state of the car in the controller for calculations
         self.coordinates = [x, y]
@@ -47,7 +48,7 @@ class PurePursuitController:
         near_point_index = self._find_near_point_index()
 
         swapped_axis_path = np.swapaxes(self.path[max(near_point_index-4, 0):min(near_point_index+4, len(self.path)-1)], 0 , 1)
-        p = np.poly1d(np.polyfit(swapped_axis_path[0], swapped_axis_path[1], self._poly_deg))
+        p = np.poly1d(np.polyfit(swapped_axis_path[0], swapped_axis_path[1], self._poly_fit_deg))
 
         point_index = 0
         while (self._point_distance(self.path[near_point_index+point_index]) < ld):
