@@ -24,7 +24,7 @@ class PurePursuitController:
     def __init__(self, car_length, kdd, max_steering_angle, poly_fit_deg): # initializes the controller and sets the initial values
         self._car_length = car_length
         self._kdd = kdd
-        self._max_steering_angle = msa
+        self._max_steering_angle = max_steering_angle
         self._poly_fit_deg  = poly_fit_deg
             
     def update_state(self, x, y, v, orientation): # update the current state of the car in the controller for calculations
@@ -50,17 +50,13 @@ class PurePursuitController:
         swapped_axis_path = np.swapaxes(self.path[max(near_point_index-4, 0):min(near_point_index+4, len(self.path)-1)], 0 , 1)
         p = np.poly1d(np.polyfit(swapped_axis_path[0], swapped_axis_path[1], self._poly_fit_deg))
 
-        point_index = 0
-        while (self._point_distance(self.path[near_point_index+point_index]) < ld):
-            point_index+=1
+        point_index = self._target_point_index(swapped_axis_path[0][near_point_index:], swapped_axis_path[1][near_point_index:], ld)
         
         x_sector = np.linspace(self.path[(near_point_index+point_index-1)[0]], self.path[near_point_index+point_index[0]], 5)
         y_sector = np.polyval(p, x_sector)
         
-        point_index = 0
-        while (self._point_distance([x_sector[point_index], y_sector[point_index]]) < ld):
-            point_index+=1
-
+        point_index = self._target_point_index(x_sector, y_sector, ld)
+        
         return [x_sector[point_index], y_sector[point_index]]
 
     def _find_near_point_index(self):
@@ -77,4 +73,10 @@ class PurePursuitController:
     def _point_distance(self, point):
         return math.sqrt((self.coordinates[0] - point[0])**2 + (self.coordinates[1] - point[1])**2)
 
-        
+    def _target_point_index(self, x_vector, y_vector, distance):
+        for point_index in range(len(x_vector)):
+            if(self._point_distance([x_vector[point_index], y_vector[point_index]]) > distance):
+                return point_index
+        return (len(x_vector)-1)
+
+
