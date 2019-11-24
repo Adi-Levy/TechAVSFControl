@@ -65,11 +65,12 @@ class PurePursuitController:
 
     def _find_near_point_index(self):
         near_point = [self.path[0]]
+        near_point_distance = self._point_distance(near_point)
         for way_point in self.path:
-            near_point_distance = self._point_distance(near_point)
             way_point_distance = self._point_distance(way_point)
             if (near_point_distance > way_point_distance):
                 near_point = way_point
+                near_point_distance = self._point_distance(near_point)
         
         return self.path.index(near_point)
 
